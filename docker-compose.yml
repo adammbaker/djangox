@@ -4,16 +4,29 @@ services:
     command: python /code/manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/code
-    ports:
-      - 8000:8000
+    container_name: django-web
     depends_on:
       - db
+    ports:
+      - "8000:8000"
+    environment:
+      - VIRTUAL_HOST=$SUBDOMAIN.adammbaker.com
+      - LETSENCRYPT_HOST=$SUBDOMAIN.adammbaker.com
+    networks:
+      - net
+
   db:
     image: postgres:16
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     environment:
       - "POSTGRES_HOST_AUTH_METHOD=trust"
+    networks:
+      - net
 
 volumes:
   postgres_data:
+
+networks:
+  net:
+    external: true
